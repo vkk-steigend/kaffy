@@ -316,15 +316,18 @@ defmodule Kaffy.ResourceAdmin do
     |> Enum.sort_by(fn w -> Map.get(w, :order, 999) end)
   end
 
-  def custom_pages(resource, conn) do
-    Utils.get_assigned_value_or_default(resource, :custom_pages, [], [conn])
+  def custom_pages(resource, conn, exclude_hidden \\ false) do
+    Enum.filter(
+        Utils.get_assigned_value_or_default(resource, :custom_pages, [], [conn]),
+        fn page -> !(exclude_hidden && Map.get(page, :hide, false)) end
+    )
   end
 
-  def collect_pages(conn) do
+  def collect_pages(conn, exclude_hidden \\ false) do
     Enum.reduce(Kaffy.Utils.contexts(), [], fn c, all ->
       all ++
         Enum.reduce(Kaffy.Utils.schemas_for_context(c), [], fn {_, resource}, all ->
-          all ++ Kaffy.ResourceAdmin.custom_pages(resource, conn)
+          all ++ Kaffy.ResourceAdmin.custom_pages(resource, conn, exclude_hidden)
         end)
     end)
     |> Enum.sort_by(fn p -> Map.get(p, :order, 999) end)

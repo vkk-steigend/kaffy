@@ -70,7 +70,7 @@
               </li>
             <% end %>
 
-            <% custom_pages = Kaffy.ResourceAdmin.collect_pages(@conn) %>
+            <% custom_pages = Kaffy.ResourceAdmin.collect_pages(@conn, true) %>
 
             <%= if !Enum.empty?(custom_pages) do %>
               <li class="nav-item">
